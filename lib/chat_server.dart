@@ -8,10 +8,51 @@ import 'package:shelf/shelf_io.dart' as io;
 final _router = Router()
   ..get('/chats', _chatsHandler)
   ..post('/send', _chatHandler)
+  ..get('/groups', _groupHandler)
+  ..post('/createGroup', _createGroupHandler)
+  ..post('/auth', _auth)
   ..delete(
     '/delete',
     _deleteHandler,
   );
+
+Future<Response> _auth(Request req) async {
+  var data = await req.readAsString();
+  final response = json.decode(data);
+
+  if (response['username'] == null || response['email'] == null) {
+    return Response.badRequest(body: json.encode({"message": "Invalid data"}));
+  }
+
+  await GroupDataBase.createUser(
+      username: response['username'], email: response['email']);
+
+  return Response.ok(json.encode({'message': 'success', 'userInfo': response}));
+}
+
+// ! Gourp
+Future<Response> _groupHandler(Request req) async {
+  final groups = await GroupDataBase.initDataBase();
+  final data = await groups.query('groups');
+  print('GROUPS $data');
+  return Response.ok(json.encode({"data": data}));
+}
+
+Future<Response> _createGroupHandler(Request req) async {
+  var data = await req.readAsString();
+  var response = json.decode(data);
+
+  if (response['name'] == null) {
+    return Response.badRequest(body: json.encode({"message": "Invalid data"}));
+  }
+
+  await GroupDataBase.createGroup(
+      name: response['name'], description: response['description'] ?? '');
+
+  return Response.ok(json.encode({'message': 'success'}));
+}
+
+// ! >>>>>>>>>>>>>>>>>>>>>>>>>
 
 Future<Response> _deleteHandler(Request req) async {
   final id = await req.readAsString();
