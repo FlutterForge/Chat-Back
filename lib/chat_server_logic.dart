@@ -5,25 +5,63 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 Router chatServerLogic() {
-  Future<Response> createUserHandler(Request req) async {
-    final body = await req.readAsString();
-    Map<String, dynamic> jsonBody = jsonDecode(body);
+  final api = Router();
 
-    UserModel data = UserModel.fromJson(jsonBody);
+  //! Create user - post('/user');
+  api.post(
+    '/user',
+    (Request request) async {
+      try {
+        final body = await request.readAsString();
+        Map<String, dynamic> jsonBody = jsonDecode(body);
 
-    data.id = HiveService.instance.getAllUsers.length;
+        UserModel data = UserModel.fromJson(jsonBody);
 
-    HiveService.instance.addUser(key: data.id, value: data);
+        data.id = HiveService.instance.getAllData(boxName: DbBoxes.users).length;
 
-    print(HiveService.instance.getAllUsers);
+        HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.users);
 
-    return Response.ok(json.encode({
-      "status": "success",
-      "message": "The user has been created successfully."
-    }));
-  }
+        return Response.ok(json.encode({
+          "status": "success",
+          "message": "The user has been created successfully."
+        }));
+      } catch (e) {
+        return Response.badRequest(body: {
+          "status": "failure",
+          "message": "Invalid data"
+        });
+      }
+    },
+  );
 
-  final router = Router()..post('/user', createUserHandler);
+  //! Get user info - get('user/:id');
+  api.get(
+    '/user/<id>',
+    (Request request, String id) {
+      try {
+        UserModel? data = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.users);
+        if (data == null) {
+          return Response.notFound(
+            json.encode(
+              {
+                "status": "failure",
+                "message": "user not found"
+              },
+            ),
+          );
+        }
+        return Response.ok(json.encode(data));
 
-  return router;
+      } catch (e) {
+        return Response.badRequest(
+          body: {
+            "status": "failure",
+            "message": "Invalid data"
+          },
+        );
+      }
+    },
+  );
+
+  return api;
 }

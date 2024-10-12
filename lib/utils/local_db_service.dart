@@ -4,8 +4,10 @@ import 'package:chat_server/models/user_model.dart';
 import 'package:hive/hive.dart';
 
 class HiveService {
-  static late Box box;
-  static const userBox = 'user_box';
+  static late Box users;
+  static late Box chats;
+  static const usersBox = 'user_box';
+  static const chatsBox = 'chats_box';
 
   //! Singleton
   HiveService.init();
@@ -17,12 +19,16 @@ class HiveService {
     final currentDirectory = Directory.current.path;
     Hive.init(currentDirectory);
     Hive.registerAdapter(UserModelAdapter());
-    box = await Hive.openBox(userBox);
+    users = await Hive.openBox(usersBox);
+    chats = await Hive.openBox(chatsBox);
   }
 
   //! write
-  void addUser({required key, required value}) async {
+  void addData({required key, required value, required DbBoxes boxName}) async {
+    final Box box = boxName == DbBoxes.users ? users : chats;
+
     await box.put(key, value);
+
     print('write ${[
       key,
       value
@@ -30,19 +36,33 @@ class HiveService {
   }
 
   //! read
-  dynamic getUser({required key}) {
+  dynamic getData({required key, required DbBoxes boxName}) {
+    final Box box = boxName == DbBoxes.users ? users : chats;
+
     print(box.get(key));
+
     return box.get(key);
   }
 
   //! read all
-  Map get getAllUsers {
+  Map getAllData({required DbBoxes boxName}) {
+    final Box box = boxName == DbBoxes.users ? users : chats;
+
+    print(box.toMap());
+
     return box.toMap();
   }
 
   //! delete
-  void deleteUser({required key}) {
+  void deleteData({required key, required DbBoxes boxName}) {
+    final Box box = boxName == DbBoxes.users ? users : chats;
+
     box.delete(key);
     print('Deleted $key');
   }
+}
+
+enum DbBoxes {
+  users,
+  chats
 }
