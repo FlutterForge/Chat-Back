@@ -1,17 +1,31 @@
-enum ChatType {
-  private,
-  group,
-  channel,
-}
+import 'package:hive/hive.dart';
 
+part 'chats_model.g.dart';
+
+@HiveType(typeId: 1)
 class ChatModel {
-  final int? id;
+  @HiveField(0)
+  int? id;
+
+  @HiveField(1)
   final String name;
-  final ChatType chatType;
+
+  @HiveField(2)
+  final String chatType;
+
+  @HiveField(3)
   final List<int> participants;
+
+  @HiveField(4)
   final String link;
+
+  @HiveField(5)
   final String? description;
+
+  @HiveField(6)
   final String? picture;
+
+  @HiveField(7)
   final List<dynamic> messages;
 
   ChatModel({
@@ -25,13 +39,14 @@ class ChatModel {
     required this.messages,
   });
 
-  // Convert from JSON (deserialization)
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
       id: json['id'] as int?,
       name: json['name'] as String,
-      chatType: ChatType.values[json['chatType'] as int],
-      participants: List<int>.from(json['participants']),
+      chatType: json['chatType'] as String,
+      participants: (json['participants'] as List<dynamic>)
+          .map((item) => item as int)
+          .toList(),
       link: json['link'] as String,
       description: json['description'] as String?,
       picture: json['picture'] as String?,
@@ -43,7 +58,7 @@ class ChatModel {
     return {
       'id': id,
       'name': name,
-      'chatType': chatType.index,
+      'chatType': chatType,
       'participants': participants,
       'link': link,
       'description': description,
