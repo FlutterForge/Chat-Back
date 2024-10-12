@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:chat_server/models/user_model.dart';
 import 'package:hive/hive.dart';
 
+//? To use any method of Hive service give parameters and HiveBox name
+
 class HiveService {
   static late Box users;
   static late Box chats;
