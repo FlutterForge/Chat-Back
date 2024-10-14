@@ -9,7 +9,7 @@ Response _optionsHandler(Request request) =>
     Response.ok('', headers: _corsHeaders);
 
 final Map<String, String> _corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Allow requests from all origins
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
