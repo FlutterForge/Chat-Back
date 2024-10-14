@@ -99,7 +99,6 @@ Router chatServerLogic() {
       }
     },
   );
-
   //! Get chat by ID - GET [ /chat/id ]
   api.get(
     '/chats/<id>',
