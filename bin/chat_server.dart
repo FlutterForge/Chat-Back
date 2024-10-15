@@ -17,7 +17,6 @@ final Map<String, String> _corsHeaders = {
 Middleware _corsMiddleware() {
   return (Handler handler) {
     return (Request request) async {
-      // If it's a preflight request, return with CORS headers immediately.
       if (request.method == 'OPTIONS') return _optionsHandler(request);
 
       // Otherwise, handle the request and add CORS headers to the response.
