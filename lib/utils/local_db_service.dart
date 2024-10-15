@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_server/models/chats_model.dart';
+import 'package:chat_server/models/chatting_model.dart';
 import 'package:chat_server/models/user_model.dart';
 import 'package:hive/hive.dart';
 
@@ -23,6 +24,7 @@ class HiveService {
     Hive.init(currentDirectory);
     Hive.registerAdapter(UserModelAdapter());
     Hive.registerAdapter(ChatModelAdapter());
+    Hive.registerAdapter(ChattingModelAdapter());
     users = await Hive.openBox(usersBox);
     chats = await Hive.openBox(chatsBox);
   }

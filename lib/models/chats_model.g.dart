@@ -24,7 +24,7 @@ class ChatModelAdapter extends TypeAdapter<ChatModel> {
       link: fields[4] as String,
       description: fields[5] as String?,
       picture: fields[6] as String?,
-      messages: (fields[7] as List).cast<dynamic>(),
+      messages: (fields[7] as List).cast<ChattingModel>(),
     );
   }
 

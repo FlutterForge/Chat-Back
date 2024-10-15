@@ -9,7 +9,7 @@ Response _optionsHandler(Request request) =>
     Response.ok('', headers: _corsHeaders);
 
 final Map<String, String> _corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Allow requests from all origins
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
@@ -17,7 +17,6 @@ final Map<String, String> _corsHeaders = {
 Middleware _corsMiddleware() {
   return (Handler handler) {
     return (Request request) async {
-      // If it's a preflight request, return with CORS headers immediately.
       if (request.method == 'OPTIONS') return _optionsHandler(request);
 
       // Otherwise, handle the request and add CORS headers to the response.
