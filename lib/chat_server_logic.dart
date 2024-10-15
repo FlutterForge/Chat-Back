@@ -19,9 +19,11 @@ Router chatServerLogic() {
 
         UserModel data = UserModel.fromJson(jsonBody);
 
-        data.id = HiveService.instance.getAllData(boxName: DbBoxes.users).length;
+        data.id =
+            HiveService.instance.getAllData(boxName: DbBoxes.users).length;
 
-        HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.users);
+        HiveService.instance
+            .addData(key: data.id, value: data, boxName: DbBoxes.users);
 
         return Response.ok(json.encode({
           "status": "success",
@@ -45,14 +47,12 @@ Router chatServerLogic() {
     '/user/<id>',
     (Request request, String id) {
       try {
-        UserModel? data = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.users);
+        UserModel? data = HiveService.instance
+            .getData(key: int.parse(id), boxName: DbBoxes.users);
         if (data == null) {
           return Response.notFound(
             json.encode(
-              {
-                "status": "failure",
-                "message": "user not found"
-              },
+              {"status": "failure", "message": "user not found"},
             ),
           );
         }
@@ -79,8 +79,10 @@ Router chatServerLogic() {
 
         ChatModel data = ChatModel.fromJson(jsonBody);
 
-        data.id = HiveService.instance.getAllData(boxName: DbBoxes.chats).length;
-        HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.chats);
+        data.id =
+            HiveService.instance.getAllData(boxName: DbBoxes.chats).length;
+        HiveService.instance
+            .addData(key: data.id, value: data, boxName: DbBoxes.chats);
 
         return Response.ok(
           json.encode({
@@ -91,11 +93,8 @@ Router chatServerLogic() {
         );
       } catch (e) {
         return Response.badRequest(
-          body: json.encode({
-            "status": "failure",
-            "message": "Invalid data",
-            "error": '$e'
-          }),
+          body: json.encode(
+              {"status": "failure", "message": "Invalid data", "error": '$e'}),
         );
       }
     },
@@ -106,14 +105,12 @@ Router chatServerLogic() {
     '/chats/<id>',
     (Request request, String id) {
       try {
-        ChatModel? data = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+        ChatModel? data = HiveService.instance
+            .getData(key: int.parse(id), boxName: DbBoxes.chats);
         if (data == null) {
           return Response.notFound(
             json.encode(
-              {
-                "status": "failure",
-                "message": "chat not found"
-              },
+              {"status": "failure", "message": "chat not found"},
             ),
           );
         }
@@ -138,19 +135,18 @@ Router chatServerLogic() {
         final body = await request.readAsString();
         Map<String, dynamic> jsonBody = jsonDecode(body);
 
-        ChatModel? chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+        ChatModel? chat = HiveService.instance
+            .getData(key: int.parse(id), boxName: DbBoxes.chats);
         if (chat == null) {
           return Response.notFound(
-            json.encode({
-              "status": "failure",
-              "message": "Chat not found"
-            }),
+            json.encode({"status": "failure", "message": "Chat not found"}),
           );
         }
 
         List<int> newParticipants = List<int>.from(jsonBody['participants']);
         chat.participants.addAll(newParticipants);
-        HiveService.instance.addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
+        HiveService.instance
+            .addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
 
         return Response.ok(json.encode({
           "status": "success",
@@ -174,13 +170,11 @@ Router chatServerLogic() {
     '/chats/<id>/messages',
     (Request request, String id) {
       try {
-        ChatModel? chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+        ChatModel? chat = HiveService.instance
+            .getData(key: int.parse(id), boxName: DbBoxes.chats);
         if (chat == null) {
           return Response.notFound(
-            json.encode({
-              "status": "failure",
-              "message": "Chat not found"
-            }),
+            json.encode({"status": "failure", "message": "Chat not found"}),
           );
         }
 
@@ -206,13 +200,12 @@ Router chatServerLogic() {
     '/chats/<id>',
     (Request request, String id) {
       try {
-        HiveService.instance.deleteData(key: int.parse(id), boxName: DbBoxes.chats);
+        HiveService.instance
+            .deleteData(key: int.parse(id), boxName: DbBoxes.chats);
 
         return Response.ok(
-          json.encode({
-            "status": "success",
-            "message": "Chat deleted successfully"
-          }),
+          json.encode(
+              {"status": "success", "message": "Chat deleted successfully"}),
         );
       } catch (e) {
         return Response.badRequest(
@@ -236,18 +229,17 @@ Router chatServerLogic() {
 
         ChattingModel newMessage = ChattingModel.fromJson(jsonBody);
 
-        ChatModel? chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+        ChatModel? chat = HiveService.instance
+            .getData(key: int.parse(id), boxName: DbBoxes.chats);
         if (chat == null) {
           return Response.notFound(
-            json.encode({
-              "status": "failure",
-              "message": "Chat not found"
-            }),
+            json.encode({"status": "failure", "message": "Chat not found"}),
           );
         }
 
         chat.messages.add(newMessage);
-        HiveService.instance.addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
+        HiveService.instance
+            .addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
 
         return Response.ok(
           json.encode({
