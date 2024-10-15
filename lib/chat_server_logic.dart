@@ -56,6 +56,7 @@ Router chatServerLogic() {
             ),
           );
         }
+        data.chats = data.chats.toSet().toList();
         return Response.ok(json.encode(data));
       } catch (e) {
         return Response.badRequest(
@@ -240,6 +241,11 @@ Router chatServerLogic() {
         chat.messages.add(newMessage);
         HiveService.instance
             .addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
+
+        UserModel userModel = HiveService.instance
+            .getData(key: jsonBody['sender'], boxName: DbBoxes.users);
+
+        userModel.chats.add(int.parse(id));
 
         return Response.ok(
           json.encode({

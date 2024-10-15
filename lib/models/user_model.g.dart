@@ -23,13 +23,14 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       profilePicture: fields[3] as String?,
       bio: fields[4] as String?,
       isOnline: fields[5] as bool,
+      chats: fields[6] != null ? (fields[6] as List).cast<int>() : [],
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(4)
       ..write(obj.bio)
       ..writeByte(5)
-      ..write(obj.isOnline);
+      ..write(obj.isOnline)
+      ..writeByte(6)
+      ..write(obj.chats);
   }
 
   @override

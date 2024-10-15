@@ -25,7 +25,11 @@ class HiveService {
     Hive.registerAdapter(UserModelAdapter());
     Hive.registerAdapter(ChatModelAdapter());
     Hive.registerAdapter(ChattingModelAdapter());
-    users = await Hive.openBox(usersBox);
+    try {
+      users = await Hive.openBox(usersBox);
+    } catch (e, err) {
+      print('ERROR $e $err');
+    }
     chats = await Hive.openBox(chatsBox);
   }
 
@@ -35,10 +39,7 @@ class HiveService {
 
     await box.put(key, value);
 
-    print('write ${[
-      key,
-      value
-    ]}');
+    print('write ${[key, value]}');
   }
 
   //! read
@@ -68,7 +69,4 @@ class HiveService {
   }
 }
 
-enum DbBoxes {
-  users,
-  chats
-}
+enum DbBoxes { users, chats }

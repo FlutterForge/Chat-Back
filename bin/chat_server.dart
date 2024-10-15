@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chat_server/utils/local_db_service.dart';
+import 'package:hive/hive.dart';
 import 'package:shelf/shelf.dart';
 import 'package:chat_server/utils/base_url.dart';
 import 'package:chat_server/chat_server_logic.dart';
