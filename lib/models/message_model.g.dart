@@ -1,34 +1,37 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'chatting_model.dart';
+part of 'message_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ChattingModelAdapter extends TypeAdapter<ChattingModel> {
+class MessageModelAdapter extends TypeAdapter<MessageModel> {
   @override
-  final int typeId = 2;
+  final int typeId = 1;
 
   @override
-  ChattingModel read(BinaryReader reader) {
+  MessageModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ChattingModel(
-      sender: fields[0] as int,
-      message: fields[1] as dynamic,
+    return MessageModel(
+      id: fields[0] as String,
+      sender: fields[1] as int,
+      message: fields[2] as dynamic,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ChattingModel obj) {
+  void write(BinaryWriter writer, MessageModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.sender)
+      ..write(obj.id)
       ..writeByte(1)
+      ..write(obj.sender)
+      ..writeByte(2)
       ..write(obj.message);
   }
 
@@ -38,7 +41,7 @@ class ChattingModelAdapter extends TypeAdapter<ChattingModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ChattingModelAdapter &&
+      other is MessageModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

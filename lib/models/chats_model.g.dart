@@ -8,7 +8,7 @@ part of 'chats_model.dart';
 
 class ChatModelAdapter extends TypeAdapter<ChatModel> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
   ChatModel read(BinaryReader reader) {
@@ -24,7 +24,7 @@ class ChatModelAdapter extends TypeAdapter<ChatModel> {
       link: fields[4] as String,
       description: fields[5] as String?,
       picture: fields[6] as String?,
-      messages: (fields[7] as List).cast<ChattingModel>(),
+      messages: (fields[7] as List).cast<MessageModel>(),
     );
   }
 

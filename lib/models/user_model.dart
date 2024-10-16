@@ -1,8 +1,9 @@
+import 'package:chat_server/models/chats_model.dart';
 import 'package:hive/hive.dart';
 
 part "user_model.g.dart";
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 2)
 class UserModel {
   @HiveField(0)
   int id;
@@ -17,7 +18,7 @@ class UserModel {
   @HiveField(5)
   final bool isOnline;
   @HiveField(6)
-  List<int> chats;
+  List<dynamic> chats;
 
   UserModel({
     this.id = 0,
@@ -26,7 +27,7 @@ class UserModel {
     this.profilePicture,
     this.bio,
     this.isOnline = false,
-    this.chats = const <int>[],
+    this.chats = const <dynamic>[],
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -37,7 +38,11 @@ class UserModel {
       profilePicture: json['profilePicture'],
       bio: json['bio'],
       isOnline: json['isOnline'] ?? false,
-      chats: json['chats'] ?? <int>[],
+      chats: (json['chats'] as List<dynamic>?)
+              ?.map((item) => item is Map<String, dynamic> 
+                    ? ChatModel.fromJson(item) 
+                    : item)
+              .toList() ?? [],
     );
   }
 
@@ -49,7 +54,10 @@ class UserModel {
       'profilePicture': profilePicture,
       'bio': bio,
       'isOnline': isOnline,
-      'chats': chats,
+      'chats': chats.map((item) => item is ChatModel 
+                           ? item.toJson() 
+                           : item)
+                    .toList(),
     };
   }
 }
