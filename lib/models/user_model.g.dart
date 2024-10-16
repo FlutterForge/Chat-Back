@@ -8,7 +8,7 @@ part of 'user_model.dart';
 
 class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
   UserModel read(BinaryReader reader) {
@@ -23,7 +23,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       profilePicture: fields[3] as String?,
       bio: fields[4] as String?,
       isOnline: fields[5] as bool,
-      chats: fields[6] != null ? (fields[6] as List).cast<int>() : [],
+      chats: (fields[6] as List).cast<dynamic>(),
     );
   }
 

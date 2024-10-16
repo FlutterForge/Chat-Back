@@ -1,9 +1,9 @@
-import 'package:chat_server/models/chatting_model.dart';
+import 'package:chat_server/models/message_model.dart';
 import 'package:hive/hive.dart';
 
 part 'chats_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 0)
 class ChatModel {
   @HiveField(0)
   int? id;
@@ -15,19 +15,19 @@ class ChatModel {
   String chatType;
 
   @HiveField(3)
-  final List<int> participants;
+  List<int> participants;
 
   @HiveField(4)
-  final String link;
+  String link;
 
   @HiveField(5)
-  final String? description;
+  String? description;
 
   @HiveField(6)
-  final String? picture;
+  String? picture;
 
   @HiveField(7)
-  List<ChattingModel> messages;
+  List<MessageModel> messages;
 
   ChatModel({
     this.id,
@@ -49,9 +49,7 @@ class ChatModel {
       link: json['link'] as String,
       description: json['description'] as String?,
       picture: json['picture'] as String?,
-      messages: (json['messages'] as List<dynamic>)
-          .map((item) => ChattingModel.fromJson(item as Map<String, dynamic>))
-          .toList(), 
+      messages: (json['messages'] as List<dynamic>).map((item) => MessageModel.fromJson(item as Map<String, dynamic>)).toList(),
     );
   }
 

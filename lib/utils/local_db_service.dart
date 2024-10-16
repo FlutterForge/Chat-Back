@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_server/models/chats_model.dart';
-import 'package:chat_server/models/chatting_model.dart';
+import 'package:chat_server/models/message_model.dart';
 import 'package:chat_server/models/user_model.dart';
 import 'package:hive/hive.dart';
 
@@ -14,23 +14,25 @@ class HiveService {
   static const chatsBox = 'chats_box';
 
   //! Singleton
-  HiveService.init();
+  HiveService.init() {
+    createBox();
+  }
   static HiveService get instance => _instance;
   static final HiveService _instance = HiveService.init();
 
   //! init
   void createBox() async {
-    final currentDirectory = Directory.current.path;
-    Hive.init(currentDirectory);
-    Hive.registerAdapter(UserModelAdapter());
-    Hive.registerAdapter(ChatModelAdapter());
-    Hive.registerAdapter(ChattingModelAdapter());
     try {
+      final currentDirectory = Directory.current.path;
+      Hive.init(currentDirectory);
+      Hive.registerAdapter(UserModelAdapter());
+      Hive.registerAdapter(ChatModelAdapter());
+      Hive.registerAdapter(MessageModelAdapter());
+      chats = await Hive.openBox(chatsBox);
       users = await Hive.openBox(usersBox);
-    } catch (e, err) {
-      print('ERROR $e $err');
+    } catch (e, ee) {
+      print("Error $e $ee");
     }
-    chats = await Hive.openBox(chatsBox);
   }
 
   //! write
@@ -39,7 +41,8 @@ class HiveService {
 
     await box.put(key, value);
 
-    print('write ${[key, value]}');
+    print("""write $key
+    $value""");
   }
 
   //! read
@@ -67,6 +70,15 @@ class HiveService {
     box.delete(key);
     print('Deleted $key');
   }
+
+  //! clean - WARNING use only for some reasons
+  void cleanDB() {
+    users.clear();
+    chats.clear();
+  }
 }
 
-enum DbBoxes { users, chats }
+enum DbBoxes {
+  users,
+  chats
+}

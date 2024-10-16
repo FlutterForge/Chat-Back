@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:chat_server/utils/local_db_service.dart';
-import 'package:hive/hive.dart';
 import 'package:shelf/shelf.dart';
 import 'package:chat_server/utils/base_url.dart';
-import 'package:chat_server/chat_server_logic.dart';
+import 'package:chat_server/utils/chat_server_logic.dart';
 import 'package:shelf/shelf_io.dart' as io;
 
-Response _optionsHandler(Request request) =>
-    Response.ok('', headers: _corsHeaders);
+Response _optionsHandler(Request request) => Response.ok('', headers: _corsHeaders);
 
 final Map<String, String> _corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,14 +26,12 @@ Middleware _corsMiddleware() {
 }
 
 void main() async {
-  HiveService.instance.createBox();
+  HiveService.init();
   final router = chatServerLogic();
 
-  final handler =
-      const Pipeline().addMiddleware(_corsMiddleware()).addHandler(router.call);
+  final handler = const Pipeline().addMiddleware(_corsMiddleware()).addHandler(router.call);
 
   HttpServer server = await io.serve(handler, baseUrl, 8000);
 
-  print(
-      "Server has successfully launched server: http://${server.address.host}:${server.port}");
+  print("Server has successfully launched server: http://${server.address.host}:${server.port}");
 }
