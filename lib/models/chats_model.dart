@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 
 part 'chats_model.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class ChatModel {
   @HiveField(0)
   int? id;

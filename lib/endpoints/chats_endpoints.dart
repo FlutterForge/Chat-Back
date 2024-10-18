@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:chat_server/models/chats_model.dart';
-import 'package:chat_server/models/user_model.dart';
 import 'package:chat_server/utils/local_db_service.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -22,20 +21,18 @@ class ChatsEndpoints {
 
           ChatModel? data = ChatModel.fromJson(jsonBody);
 
-          data.id = HiveService.instance.getAllData(boxName: DbBoxes.chats).length;
-          for (int value in data.participants) {
-            UserModel user = HiveService.instance.getData(key: value, boxName: DbBoxes.users);
-            user.chats.add(data.id!);
-            HiveService.instance.addData(key: user.id, value: user, boxName: DbBoxes.users);
+          int id = await HiveService.instance.getAllData(boxName: DbBoxes.chats).then((value) => value.values.length) ?? 0;
+          if (await HiveService.instance.getData(key: id, boxName: DbBoxes.chats) != null) {
+            id += 1;
           }
-          data.participants = data.participants.toSet().toList();
+
+          data.id = id;
           HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.chats);
-          data = HiveService.instance.getData(key: data.id, boxName: DbBoxes.chats);
           return Response.ok(
             json.encode({
               "status": "success",
               "message": "The chat has been created successfully.",
-              "data": data!.toJson()
+              "data": data.toJson()
             }),
           );
         } catch (e) {
@@ -57,16 +54,7 @@ class ChatsEndpoints {
                 "link": "https://tme/flutter_forge",
                 "description": "",
                 "picture": "https://example.com/group.png",
-                "messages": [
-                  {
-                    "sender": 0,
-                    "message": "Hi"
-                  },
-                  {
-                    "sender": 20,
-                    "message": "How are you"
-                  }
-                ]
+                "messages": []
               }
             }),
           );
@@ -79,9 +67,9 @@ class ChatsEndpoints {
   void getChat({required Router api, required String endpoint}) {
     return api.get(
       endpoint,
-      (Request request, String id) {
+      (Request request, String id) async {
         try {
-          ChatModel? data = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+          ChatModel? data = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
           if (data == null) {
             return Response.notFound(
               json.encode(
@@ -92,7 +80,7 @@ class ChatsEndpoints {
               ),
             );
           }
-          return Response.ok(json.encode(data));
+          return Response.ok(json.encode(data.toJson()));
         } catch (e) {
           return Response.badRequest(
             body: json.encode({
@@ -115,7 +103,7 @@ class ChatsEndpoints {
           final body = await request.readAsString();
           Map<String, dynamic> jsonBody = jsonDecode(body);
 
-          ChatModel? chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+          ChatModel? chat = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
           if (chat == null) {
             return Response.notFound(
               json.encode({
@@ -130,7 +118,7 @@ class ChatsEndpoints {
           chat.participants = chat.participants.toSet().toList();
           HiveService.instance.addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
 
-          ChatModel result = HiveService.instance.getData(key: chat.id, boxName: DbBoxes.chats) ?? chat;
+          ChatModel result = await HiveService.instance.getData(key: chat.id, boxName: DbBoxes.chats) ?? chat;
 
           return Response.ok(json.encode({
             "status": "success",

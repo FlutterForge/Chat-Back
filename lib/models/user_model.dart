@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 
 part "user_model.g.dart";
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 class UserModel {
   @HiveField(0)
   int id;
@@ -18,7 +18,7 @@ class UserModel {
   @HiveField(5)
   final bool isOnline;
   @HiveField(6)
-  List<dynamic> chats;
+  List<UserModel> chats;
 
   UserModel({
     this.id = 0,
@@ -27,7 +27,7 @@ class UserModel {
     this.profilePicture,
     this.bio,
     this.isOnline = false,
-    this.chats = const <dynamic>[],
+    this.chats = const <UserModel>[],
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -39,10 +39,11 @@ class UserModel {
       bio: json['bio'],
       isOnline: json['isOnline'] ?? false,
       chats: (json['chats'] as List<dynamic>?)
-              ?.map((item) => item is Map<String, dynamic> 
-                    ? ChatModel.fromJson(item) 
-                    : item)
-              .toList() ?? [],
+              ?.map((item) => item is Map<String, dynamic> ? UserModel.fromJson(item) : null) 
+              .where((item) => item != null) 
+              .cast<UserModel>()
+              .toList() ??
+          [],
     );
   }
 
@@ -54,10 +55,7 @@ class UserModel {
       'profilePicture': profilePicture,
       'bio': bio,
       'isOnline': isOnline,
-      'chats': chats.map((item) => item is ChatModel 
-                           ? item.toJson() 
-                           : item)
-                    .toList(),
+      'chats': chats.map((item) => item is ChatModel ? item.toJson() : item).toList(),
     };
   }
 }

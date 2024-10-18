@@ -21,7 +21,11 @@ class UserEndpoints {
 
           UserModel data = UserModel.fromJson(jsonBody);
 
-          data.id = HiveService.instance.getAllData(boxName: DbBoxes.users).length;
+          int id = await HiveService.instance.getAllData(boxName: DbBoxes.users).then((value) => value.length) ?? 0;
+          if (await HiveService.instance.getData(key: id, boxName: DbBoxes.users) != null) {
+            id += 1;
+          }
+          data.id = id;
 
           HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.users);
 
@@ -52,9 +56,9 @@ class UserEndpoints {
   void getUserInfo({required Router api, required String endpoint}) {
     return api.get(
       endpoint,
-      (Request request, String id) {
+      (Request request, String id) async {
         try {
-          UserModel? data = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.users);
+          UserModel? data = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.users);
           if (data == null) {
             return Response.notFound(
               json.encode(
@@ -65,21 +69,6 @@ class UserEndpoints {
               ),
             );
           }
-
-          final Map chats = HiveService.instance.getAllData(boxName: DbBoxes.chats);
-          List result = List.from(data.chats);
-          for (int index = 0; index < result.length; index++) {
-            for (int index = 0; index < result.length; index++) {
-              if (result[index] is int) {
-                print(index);
-                print(chats[result[index]]);
-                result[index] = chats[result[index]];
-              }
-            }
-          }
-
-          print(result);
-          data.chats = result;
 
           return Response.ok(json.encode(data));
         } catch (e) {

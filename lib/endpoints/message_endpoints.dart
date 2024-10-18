@@ -23,7 +23,7 @@ class MessageEndpoints {
 
           MessageModel newMessage = MessageModel.fromJson(jsonBody);
 
-          ChatModel? chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+          ChatModel? chat = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
           if (chat == null) {
             return Response.notFound(
               json.encode({
@@ -36,11 +36,11 @@ class MessageEndpoints {
           chat.messages.add(newMessage);
           HiveService.instance.addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
 
-          UserModel userModel = HiveService.instance.getData(key: jsonBody['sender'], boxName: DbBoxes.users);
+          UserModel userModel = await HiveService.instance.getData(key: jsonBody['sender'], boxName: DbBoxes.users);
 
-          userModel.chats.add(int.parse(id));
+          userModel.chats.add(userModel);
 
-          userModel = HiveService.instance.getData(key: jsonBody['sender'], boxName: DbBoxes.users);
+          userModel = await HiveService.instance.getData(key: jsonBody['sender'], boxName: DbBoxes.users);
 
           // userModel.chats.add();
 
@@ -58,9 +58,11 @@ class MessageEndpoints {
               "message": "Invalid data",
               "error": e.toString(),
               "sample request body": {
-                "sender": 20,
-                "message": "Hi"
-              }
+                'id': id,
+                'sender': 1,
+                'message': "What's up?",
+                'dateTime': DateTime.now().toString(),
+              },
             }),
           );
         }
@@ -71,16 +73,19 @@ class MessageEndpoints {
   void deleteMessage({required Router api, required String endpoint}) {
     return api.delete(
       endpoint,
-      (Request request, String id) {
+      (Request request, String id) async {
         try {
-          ChatModel chat = HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
-          chat.messages.removeWhere((value) => value.id == id);
+          final body = await request.readAsString();
+          Map<String, dynamic> jsonBody = jsonDecode(body);
+          final String uid = jsonBody['id'];
+          ChatModel chat = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.chats);
+          chat.messages.removeWhere((value) => value.id == uid);
           HiveService.instance.addData(key: chat.id, value: chat, boxName: DbBoxes.chats);
-          chat = HiveService.instance.getData(key: chat.id, boxName: DbBoxes.chats);
-          
+          chat = await HiveService.instance.getData(key: chat.id, boxName: DbBoxes.chats);
+
           return Response.ok(json.encode({
             "status": "success",
-            "message": "Participants added successfully.",
+            "message": "Message deleted successfully",
             "data": chat.toJson()
           }));
         } catch (e) {
@@ -88,7 +93,10 @@ class MessageEndpoints {
             body: json.encode({
               "status": "failure",
               "message": "Invalid data",
-              "error": e.toString()
+              "error": e.toString(),
+              "sample request body": {
+                "id": "lfj45ljlkj45jl"
+              },
             }),
           );
         }

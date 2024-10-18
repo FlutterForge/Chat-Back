@@ -27,6 +27,7 @@ Middleware _corsMiddleware() {
 
 void main() async {
   HiveService.init();
+
   final router = chatServerLogic();
 
   final handler = const Pipeline().addMiddleware(_corsMiddleware()).addHandler(router.call);

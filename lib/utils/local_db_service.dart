@@ -21,22 +21,34 @@ class HiveService {
   static final HiveService _instance = HiveService.init();
 
   //! init
-  void createBox() async {
-    try {
-      final currentDirectory = Directory.current.path;
-      Hive.init(currentDirectory);
-      Hive.registerAdapter(UserModelAdapter());
+  Future<void> createBox() async {
+    final currentDirectory = Directory.current.path;
+    Hive.init(currentDirectory);
+
+    if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(ChatModelAdapter());
-      Hive.registerAdapter(MessageModelAdapter());
-      chats = await Hive.openBox(chatsBox);
-      users = await Hive.openBox(usersBox);
-    } catch (e, ee) {
-      print("Error $e $ee");
     }
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(MessageModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(UserModelAdapter());
+    }
+
+    chats = await Hive.openBox(chatsBox);
+    users = await Hive.openBox(usersBox);
   }
 
   //! write
   void addData({required key, required value, required DbBoxes boxName}) async {
+    if (!Hive.isBoxOpen(usersBox)) {
+      users = await Hive.openBox(usersBox);
+    }
+
+    if (!Hive.isBoxOpen(chatsBox)) {
+      chats = await Hive.openBox(chatsBox);
+    }
+
     final Box box = boxName == DbBoxes.users ? users : chats;
 
     await box.put(key, value);
@@ -46,7 +58,15 @@ class HiveService {
   }
 
   //! read
-  dynamic getData({required key, required DbBoxes boxName}) {
+  dynamic getData({required key, required DbBoxes boxName}) async {
+    if (!Hive.isBoxOpen(usersBox)) {
+      users = await Hive.openBox(usersBox);
+    }
+
+    if (!Hive.isBoxOpen(chatsBox)) {
+      chats = await Hive.openBox(chatsBox);
+    }
+
     final Box box = boxName == DbBoxes.users ? users : chats;
 
     print(box.get(key));
@@ -55,7 +75,15 @@ class HiveService {
   }
 
   //! read all
-  Map getAllData({required DbBoxes boxName}) {
+  Future<Map> getAllData({required DbBoxes boxName}) async {
+    if (!Hive.isBoxOpen(usersBox)) {
+      users = await Hive.openBox(usersBox);
+    }
+
+    if (!Hive.isBoxOpen(chatsBox)) {
+      chats = await Hive.openBox(chatsBox);
+    }
+
     final Box box = boxName == DbBoxes.users ? users : chats;
 
     print(box.toMap());
@@ -64,18 +92,35 @@ class HiveService {
   }
 
   //! delete
-  void deleteData({required key, required DbBoxes boxName}) {
+  void deleteData({required key, required DbBoxes boxName}) async {
+    if (!Hive.isBoxOpen(usersBox)) {
+      users = await Hive.openBox(usersBox);
+    }
+
+    if (!Hive.isBoxOpen(chatsBox)) {
+      chats = await Hive.openBox(chatsBox);
+    }
+
     final Box box = boxName == DbBoxes.users ? users : chats;
 
-    box.delete(key);
-    print('Deleted $key');
+    box.delete(key).then((value) {
+      print('Deleted $key');
+    });
   }
 
-  //! clean - WARNING use only for some reasons
-  void cleanDB() {
-    users.clear();
-    chats.clear();
-  }
+  // //! clean - WARNING use only for some reasons
+  // Future<void> cleanDB() async {
+  //   if (!Hive.isBoxOpen(usersBox)) {
+  //     users = await Hive.openBox(usersBox);
+  //   }
+
+  //   if (!Hive.isBoxOpen(chatsBox)) {
+  //     chats = await Hive.openBox(chatsBox);
+  //   }
+  //   users.deleteFromDisk();
+  //   chats.deleteFromDisk();
+  //   print("CLEARED");
+  // }
 }
 
 enum DbBoxes {
