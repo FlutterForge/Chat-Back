@@ -171,4 +171,27 @@ class ChatsEndpoints {
       },
     );
   }
+
+  ///"Method used for to get all chat to decrease api calls"
+  void getAllChats({required Router api, required String endpoint}) {
+    return api.get(endpoint, (Request request) async {
+      try {
+        List chats = await HiveService.instance.getAllData(boxName: DbBoxes.chats).then((val) => val.values.toList());
+
+        return Response.ok(json.encode({
+          "status": "success",
+          "message": "Chats has been came successfully",
+          "data": chats,
+        }));
+      } catch (e) {
+        return Response.badRequest(
+          body: json.encode({
+            "status": "failure",
+            "message": "Invalid data",
+            "error": e.toString(),
+          }),
+        );
+      }
+    });
+  }
 }

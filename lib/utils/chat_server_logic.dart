@@ -12,22 +12,28 @@ Router chatServerLogic() {
   //! Get user info by ID - GET
   UserEndpoints.instance.getUserInfo(api: api, endpoint: '/user/<id>');
 
-  //! Create chat(channel, group) - POST [ /chats ]
+  //! Update user info by ID - PUT
+  UserEndpoints.instance.updateUserInfo(api: api, endpoint: '/users/<id>/update');
+
+  //! Create chat(channel, group)
   ChatsEndpoints.instance.createChat(api: api, endpoint: '/chats');
 
-  //! Get chat by ID - GET [ /chat/id ]
+  //! Get chat by ID - GET
   ChatsEndpoints.instance.getChat(api: api, endpoint: '/chats/<id>');
 
-  //! Add new participants - PUT [ /chats/<id>/participants ]
+  //! Get all chats - GET
+  ChatsEndpoints.instance.getAllChats(api: api, endpoint: '/chats');
+
+  //! Add new participants - PUT
   ChatsEndpoints.instance.addNewParticipants(api: api, endpoint: '/chats/<id>/participants');
 
-  //! Delete a chat by ID - DELETE [ /chats/<id> ]
+  //! Delete a chat by ID - DELETE 
   ChatsEndpoints.instance.deleteChat(api: api, endpoint: '/chats/<id>');
 
-  //! Send message to chat - POST [ /chats/<id>/message ]
+  //! Send message to chat - POST
   MessageEndpoints.instance.sendMessage(api: api, endpoint: '/chats/<id>/message');
 
-  //! Delete message by ID - DELETE [ /chats/<id>/message ]
+  //! Delete message by ID - DELETE
   MessageEndpoints.instance.deleteMessage(api: api, endpoint: '/chats/<id>/message');
 
   return api;

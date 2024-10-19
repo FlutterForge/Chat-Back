@@ -83,4 +83,48 @@ class UserEndpoints {
       },
     );
   }
+
+  ///"Method used for update user info"
+  void updateUserInfo({required Router api, required String endpoint}) {
+    api.put(
+      endpoint,
+      (Request request, String id) async {
+        try {
+          final String body = await request.readAsString();
+          Map<String, dynamic> data = jsonDecode(body);
+
+          UserModel user = await HiveService.instance.getData(key: int.parse(id), boxName: DbBoxes.users);
+
+          Map<String, dynamic> result = user.toJson();
+          result.updateAll((key, value) {
+            if (data.containsKey(key) && key != 'id') {
+              return data[key];
+            } else {
+              return value;
+            }
+          });
+
+          HiveService.instance.addData(key: user.id, value: UserModel.fromJson(result), boxName: DbBoxes.users);
+
+          return Response.ok(json.encode(result));
+        } catch (e) {
+          return Response.badRequest(
+            body: json.encode({
+              "status": "failure",
+              "message": "Invalid data",
+              "error": e.toString(),
+              "sample request body": {
+                "status": "success",
+                "message": "The user has been created successfully.",
+                "sample request body": {
+                  "bio": "Flutter developer",
+                  "isOnline": true
+                },
+              }
+            }),
+          );
+        }
+      },
+    );
+  }
 }
