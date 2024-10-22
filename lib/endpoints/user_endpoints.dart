@@ -21,19 +21,31 @@ class UserEndpoints {
 
           UserModel data = UserModel.fromJson(jsonBody);
 
-          int id = await HiveService.instance.getAllData(boxName: DbBoxes.users).then((value) => value.length) ?? 0;
-          if (await HiveService.instance.getData(key: id, boxName: DbBoxes.users) != null) {
-            id += 1;
+          data.isOnline = true;
+
+          if (await HiveService.instance.getData(key: data.phoneNumber, boxName: DbBoxes.users) != null) {
+            data = await HiveService.instance.getData(key: data.phoneNumber, boxName: DbBoxes.users);
+
+            return Response.ok(
+              json.encode({
+                "status": "success",
+                "message": "The user data fetched successfully.",
+                "data": data.toJson(),
+              }),
+            );
+          } else {
+            if (data.username.isNotEmpty) {
+              HiveService.instance.addData(key: data.phoneNumber, value: data, boxName: DbBoxes.users);
+            }
+            return Response(
+              202,
+              body: json.encode({
+                "status": "success",
+                "message": "The user has been created successfully.",
+                "data": data.toJson(),
+              }),
+            );
           }
-          data.id = id;
-
-          HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.users);
-
-          return Response.ok(json.encode({
-            "status": "success",
-            "message": "The user has been created successfully.",
-            "data": data.toJson(),
-          }));
         } catch (e) {
           return Response.badRequest(
             body: json.encode({
@@ -41,6 +53,7 @@ class UserEndpoints {
               "message": "Invalid data",
               "error": e.toString(),
               "sample request body": {
+                'id': "[#e51e4]",
                 "username": "John Wick",
                 "email": "johnwick@gmail.com",
                 "phoneNumber": "+998907711655"
@@ -118,7 +131,7 @@ class UserEndpoints {
                 "message": "The user has been created successfully.",
                 "sample request body": {
                   "bio": "Flutter developer",
-                  "isOnline": true
+                  "isOnline": true,
                 },
               }
             }),

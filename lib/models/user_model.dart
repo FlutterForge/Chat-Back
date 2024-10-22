@@ -6,7 +6,7 @@ part "user_model.g.dart";
 @HiveType(typeId: 3)
 class UserModel {
   @HiveField(0)
-  int id;
+  final String id;
   @HiveField(1)
   final String username;
   @HiveField(2)
@@ -16,12 +16,12 @@ class UserModel {
   @HiveField(4)
   final String? bio;
   @HiveField(5)
-  final bool isOnline;
+  bool isOnline;
   @HiveField(6)
   List<UserModel> chats;
 
   UserModel({
-    this.id = 0,
+    required this.id,
     required this.username,
     required this.phoneNumber,
     this.profilePicture,
@@ -32,7 +32,7 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] ?? 0,
+      id: json['id'],
       username: json['username'],
       phoneNumber: json['phoneNumber'],
       profilePicture: json['profilePicture'],

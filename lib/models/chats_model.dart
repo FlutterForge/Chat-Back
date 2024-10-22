@@ -6,7 +6,7 @@ part 'chats_model.g.dart';
 @HiveType(typeId: 1)
 class ChatModel {
   @HiveField(0)
-  int? id;
+  String id;
 
   @HiveField(1)
   String name;
@@ -30,7 +30,7 @@ class ChatModel {
   List<MessageModel> messages;
 
   ChatModel({
-    this.id,
+    required this.id,
     required this.name,
     required this.chatType,
     required this.participants,
@@ -42,7 +42,7 @@ class ChatModel {
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      id: json['id'] as int?,
+      id: json['id'] as String,
       name: json['name'] as String,
       chatType: json['chatType'] as String,
       participants: List<int>.from(json['participants'] as List<dynamic>),

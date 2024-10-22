@@ -86,8 +86,6 @@ class HiveService {
 
     final Box box = boxName == DbBoxes.users ? users : chats;
 
-    print(box.toMap());
-
     return box.toMap();
   }
 
@@ -103,24 +101,22 @@ class HiveService {
 
     final Box box = boxName == DbBoxes.users ? users : chats;
 
-    box.delete(key).then((value) {
-      print('Deleted $key');
-    });
+    box.delete(key);
   }
 
   // //! clean - WARNING use only for some reasons
-  // Future<void> cleanDB() async {
-  //   if (!Hive.isBoxOpen(usersBox)) {
-  //     users = await Hive.openBox(usersBox);
-  //   }
+  Future<void> cleanDB() async {
+    if (!Hive.isBoxOpen(usersBox)) {
+      users = await Hive.openBox(usersBox);
+    }
 
-  //   if (!Hive.isBoxOpen(chatsBox)) {
-  //     chats = await Hive.openBox(chatsBox);
-  //   }
-  //   users.deleteFromDisk();
-  //   chats.deleteFromDisk();
-  //   print("CLEARED");
-  // }
+    if (!Hive.isBoxOpen(chatsBox)) {
+      chats = await Hive.openBox(chatsBox);
+    }
+    users.deleteFromDisk();
+    chats.deleteFromDisk();
+    print("CLEARED");
+  }
 }
 
 enum DbBoxes {

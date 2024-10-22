@@ -26,7 +26,8 @@ Middleware _corsMiddleware() {
 }
 
 void main() async {
-  HiveService.init();
+  // await HiveService.instance.cleanDB();
+  HiveService.instance.createBox();
 
   final router = chatServerLogic();
 

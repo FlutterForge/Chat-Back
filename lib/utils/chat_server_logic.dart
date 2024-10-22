@@ -27,7 +27,7 @@ Router chatServerLogic() {
   //! Add new participants - PUT
   ChatsEndpoints.instance.addNewParticipants(api: api, endpoint: '/chats/<id>/participants');
 
-  //! Delete a chat by ID - DELETE 
+  //! Delete a chat by ID - DELETE
   ChatsEndpoints.instance.deleteChat(api: api, endpoint: '/chats/<id>');
 
   //! Send message to chat - POST

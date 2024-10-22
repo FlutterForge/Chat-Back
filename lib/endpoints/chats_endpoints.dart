@@ -21,13 +21,8 @@ class ChatsEndpoints {
 
           ChatModel? data = ChatModel.fromJson(jsonBody);
 
-          int id = await HiveService.instance.getAllData(boxName: DbBoxes.chats).then((value) => value.values.length) ?? 0;
-          if (await HiveService.instance.getData(key: id, boxName: DbBoxes.chats) != null) {
-            id += 1;
-          }
-
-          data.id = id;
           HiveService.instance.addData(key: data.id, value: data, boxName: DbBoxes.chats);
+          
           return Response.ok(
             json.encode({
               "status": "success",
@@ -42,6 +37,7 @@ class ChatsEndpoints {
               "message": "Invalid data",
               "error": '$e',
               "sample: request body": {
+                "id": "[fj4949kj]",
                 "name": "Flutter Forge",
                 "chatType": "group",
                 "participants": [
